@@ -1,0 +1,19 @@
+﻿{
+    "Timestamp":  "2026-09-10 09:14:33",
+    "TargetPhpDir":  "C:\\wamp64\\bin\\php\\php8.2.29",
+    "MachinePath":  "C:\\Program Files\\coreutils\\bin;C:\\Python314\\Scripts\\;C:\\Python314\\;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\Git\\cmd;C:\\ProgramData\\chocolatey\\bin;C:\\Program Files\\nodejs\\;C:\\wamp64\\bin\\php\\php8.2.29;",
+    "UserPath":  "C:\\wamp64\\bin\\php\\php8.2.29;C:\\Users\\DPW-HUBER\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\DPW-HUBER\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.3.5\\bin;C:\\Users\\DPW-HUBER\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\DPW-HUBER\\AppData\\Local\\Programs\\Antigravity\\bin;C:\\Users\\DPW-HUBER\\AppData\\Local\\Programs\\Antigravity IDE\\bin;C:\\Users\\DPW-HUBER\\AppData\\Roaming\\npm;C:\\Users\\DPW-HUBER\\AppData\\Local\\Microsoft\\WinGet\\Packages\\cURL.cURL_Microsoft.Winget.Source_8wekyb3d8bbwe\\curl-8.20.0_4-win64-mingw\\bin;C:\\Users\\DPW-HUBER\\AppData\\Local\\ComposerSetup\\bin;C:\\Users\\DPW-HUBER\\AppData\\Roaming\\Composer\\vendor\\bin",
+    "IniFiles":  [
+                     {
+                         "OriginalPath":  "C:\\wamp64\\bin\\php\\php8.2.29\\php.ini",
+                         "BackupName":  "php.ini"
+                     },
+                     {
+                         "OriginalPath":  "C:\\wamp64\\bin\\php\\php8.2.29\\phpForApache.ini",
+                         "BackupName":  "phpForApache.ini"
+                     }
+                 ],
+    "ProfileFiles":  [
+
+                     ]
+}
