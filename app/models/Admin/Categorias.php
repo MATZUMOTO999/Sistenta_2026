@@ -21,7 +21,6 @@ class Categorias extends Model{
         return $stmt->execute($params);
     }
 
-
     public function obtenerCategorias($start, $length, $orderColumnIndex, $orderDir, $filters){
         $columns = ['id', 'nombre', 'descripcion', 'activo'];
         $orderColumn = $columns[$orderColumnIndex] ?? 'nombre';
@@ -34,5 +33,15 @@ class Categorias extends Model{
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return ['data' => $data, 'total' => count($data)];
+    }
+
+    //categoria select para el formulario de productos
+    public function Categorias_select(){
+        // obtiene todas las categorias activas para el select de productos, ordenadas alfabéticamente
+        $sql = "SELECT id, nombre FROM {$this->table} WHERE activo = 1 ORDER BY nombre ASC";
+        $stmt = self::$db->prepare($sql);
+        $stmt->execute();
+        // muestra los resultados como un array asociativo
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
