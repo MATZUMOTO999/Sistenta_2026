@@ -35,7 +35,7 @@ class LoginController extends Controller
 
         $db = (new \Core\Model())->getDB();
 
-        $sql = "SELECT * FROM usuarios WHERE email = :correo AND activo = 1 LIMIT 1";
+        $sql = "SELECT * FROM usuarios WHERE email = :correo AND activo = 1 LIMIT 1";  // CAMBIO REALIZADO: Se agregó "AND activo = 1" para filtrar solo usuarios activos
         $stmt = $db->prepare($sql);
         $stmt->execute([':correo' => $correo]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
