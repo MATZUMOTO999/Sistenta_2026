@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use Core\Controller;
 use App\Models\Admin\Categorias;
 use App\Models\Admin\Productos;
+use PDOException;
 
 class ProductosController extends Controller
 {
@@ -70,5 +71,89 @@ class ProductosController extends Controller
             'categorias' => $categorias
         ]);
         exit;
+    }
+    // producto editar
+    //metodo editar
+    public function editar($id)
+    {
+        $categorias = $this->categoriasModel->Categorias_select();
+        $producto = $this->productosModel->ver($id);
+
+        if (!$producto) {
+            $_SESSION['flash_error'] = 'No se encontró el producto solicitado.';
+            header('Location: ' . BASE_URL . '/admin/productos');
+            exit;
+        }
+
+        $this->view('admin/productos/editar', [
+            'isAdmin'   => true,
+            'module'    => 'admin',
+            'pageTitle' => 'Editar Producto',
+            'categorias' => $categorias,
+            'producto' => $producto
+        ]);
+        exit;
+    }
+
+    public function actualizar()
+    {
+        $producto = [
+            'id' => (string) ($_POST['id'] ?? ''),
+            'categoria_id' => (string) ($_POST['categoria_id'] ?? ''),
+            'codigo_sku' => (string) ($_POST['codigo_sku'] ?? ''),
+            'nombre' => (string) ($_POST['nombre'] ?? ''),
+            'descripcion' => (string) ($_POST['descripcion'] ?? ''),
+            'precio_venta' => (string) ($_POST['precio_venta'] ?? ''),
+            'stock_actual' => (string) ($_POST['stock_actual'] ?? ''),
+            'activo' => (string) ($_POST['activo'] ?? '')
+        ];
+
+        $idValido = filter_var($producto['id'], FILTER_VALIDATE_INT);
+        $categoriaValida = filter_var($producto['categoria_id'], FILTER_VALIDATE_INT);
+        $stockValido = filter_var($producto['stock_actual'], FILTER_VALIDATE_INT);
+        $datosValidos = $idValido !== false && $idValido > 0
+            && $categoriaValida !== false && $categoriaValida > 0
+            && trim($producto['codigo_sku']) !== ''
+            && trim($producto['nombre']) !== ''
+            && trim($producto['descripcion']) !== ''
+            && is_numeric($producto['precio_venta']) && (float) $producto['precio_venta'] >= 0
+            && $stockValido !== false && $stockValido >= 0
+            && in_array($producto['activo'], ['0', '1'], true);
+
+        if (!$datosValidos) {
+            $_SESSION['flash_error'] = 'Verifique los datos ingresados e inténtelo nuevamente.';
+            $this->mostrarFormularioEdicion($producto);
+            exit;
+        }
+
+        try {
+            $actualizado = $this->productosModel->actualizar($producto);
+        } catch (PDOException $exception) {
+            error_log('Error al actualizar producto: ' . $exception->getMessage());
+            $_SESSION['flash_error'] = 'No se pudo actualizar el producto. Revise los datos e inténtelo nuevamente.';
+            $this->mostrarFormularioEdicion($producto);
+            exit;
+        }
+
+        if (!$actualizado) {
+            $_SESSION['flash_error'] = 'No se pudo actualizar el producto. Revise los datos e inténtelo nuevamente.';
+            $this->mostrarFormularioEdicion($producto);
+            exit;
+        }
+
+        $_SESSION['flash_success'] = 'Producto actualizado correctamente.';
+        header('Location: ' . BASE_URL . '/admin/productos');
+        exit;
+    }
+
+    private function mostrarFormularioEdicion(array $producto)
+    {
+        $this->view('admin/productos/editar', [
+            'isAdmin' => true,
+            'module' => 'admin',
+            'pageTitle' => 'Editar Producto',
+            'categorias' => $this->categoriasModel->Categorias_select(),
+            'producto' => $producto
+        ]);
     }
 }

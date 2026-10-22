@@ -1,6 +1,9 @@
 <?php require __DIR__ . '/../../layouts/header.php'; ?>
 <div class="card">
     <h3> Lista Producto</h3>
+    <br>
+    <a class="btn btn-outline-success col-2" href="<?= BASE_URL ?>/admin/productos/nuevo">Nuevo Producto</a>
+
      <table class="table-bordered m-3">
         <thead>
             <tr>
@@ -15,23 +18,25 @@
         </thead>
         <tbody>
             <?php
-            $contador =0;
-            foreach ($productos as $producto){
-                $$contador+=1;
-                ?>
+            $contador = 0;
+            foreach ($productos as $producto):
+                $contador++;
+            ?>
                 <tr>
-                    <td><?=  $contador ?></td>
-                    <td><?=  $producto['nombre'] ?></td>
-                    <td><?=  $producto['precio'] ?></td>
-                    <td><?=  $producto['stock'] ?></td>
-                    <td><?=  $producto['categoria'] ?></td>
-                    <td><?=  $producto['codigo'] ?></td>
+                    <td><?= $contador ?></td>
+                    <td><?= htmlspecialchars($producto['categoria_nombre'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars($producto['codigo_sku'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars($producto['nombre'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars((string) $producto['precio_venta'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars((string) $producto['stock_actual'], ENT_QUOTES, 'UTF-8') ?></td>
+                    
                     <td>
-                        <a href="<?= BASE_URL ?>/admin/productos/editar/<?= $producto['id'] ?>" class="btn btn-sm btn-primary">Editar</a>
-                        <a href="<?= BASE_URL ?>/admin/productos/eliminar/<?= $producto['id'] ?>" class="btn btn-sm btn-danger">Eliminar</a>
+                        <a class="btn btn-outline-primary" title="Editar" href="<?= BASE_URL ?>/admin/productos/editar/<?= $producto['id'] ?>" ><i class="fa fa-edit"></i class="fa fa-edit"> </a>
+                        <a class="btn btn-outline-danger" title="Eliminar" href="<?= BASE_URL ?>/admin/productos/eliminar/<?= $producto['id'] ?>" ><i class="fa fa-trash"></i class="fa fa-trash"> </a>
                     </td>
+
                 </tr>
-            }
+            <?php endforeach; ?>
         </tbody>
      </table>
  
