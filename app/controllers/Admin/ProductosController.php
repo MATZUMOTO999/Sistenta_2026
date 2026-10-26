@@ -25,13 +25,31 @@ class ProductosController extends Controller
     // Este método valida y registra un nuevo producto en la base de datos.
     public function guardar()
     {
-        // Recupera los datos enviados desde el formulario de creación del producto.
-        $data = $_POST;
+        $data = [
+            'categoria_id' => (string) ($_POST['categoria_id'] ?? ''),
+            'codigo_sku' => (string) ($_POST['codigo_sku'] ?? ''),
+            'nombre' => (string) ($_POST['nombre'] ?? ''),
+            'descripcion' => (string) ($_POST['descripcion'] ?? ''),
+            'precio_venta' => (string) ($_POST['precio_venta'] ?? ''),
+            'stock_actual' => (string) ($_POST['stock_actual'] ?? '')
+        ];
 
-        // Verifica que todos los campos requeridos estén completos antes de guardar.
-        if (!empty($data['categoria_id']) && !empty($data['codigo_sku']) && !empty($data['nombre']) && !empty($data['descripcion']) && !empty($data['precio_venta']) && !empty($data['stock_actual'])) {
-            // Llama al modelo para guardar el producto en la base de datos.
-            $resultado = $this->productosModel->registrar($data);
+        $categoriaValida = filter_var($data['categoria_id'], FILTER_VALIDATE_INT);
+        $stockValido = filter_var($data['stock_actual'], FILTER_VALIDATE_INT);
+        $datosValidos = $categoriaValida !== false && $categoriaValida > 0
+            && trim($data['codigo_sku']) !== ''
+            && trim($data['nombre']) !== ''
+            && trim($data['descripcion']) !== ''
+            && is_numeric($data['precio_venta']) && (float) $data['precio_venta'] >= 0
+            && $stockValido !== false && $stockValido >= 0;
+
+        if ($datosValidos) {
+            try {
+                $resultado = $this->productosModel->registrar($data);
+            } catch (PDOException $exception) {
+                error_log('Error al registrar producto: ' . $exception->getMessage());
+                $resultado = false;
+            }
 
             // Redirige según el resultado del registro.
             if ($resultado) {
@@ -43,7 +61,7 @@ class ProductosController extends Controller
 
         // Si falla la validación o el guardado, devuelve al formulario con un error.
         $_SESSION['flash_error'] = 'Error al registrar el producto.';
-        header('Location: ' . BASE_URL . '/admin/productos/nuevo');
+        $this->mostrarFormularioNuevo($data);
         exit;
     }
 
@@ -63,14 +81,19 @@ class ProductosController extends Controller
     // Carga el formulario para registrar un nuevo producto y sus categorías disponibles.
     public function nuevo()
     {
-        $categorias = $this->categoriasModel->Categorias_select();
-        $this->view('admin/productos/nuevo', [
-            'isAdmin'   => true,
-            'module'    => 'admin',
-            'pageTitle' => 'Nuevo Producto',
-            'categorias' => $categorias
-        ]);
+        $this->mostrarFormularioNuevo([]);
         exit;
+    }
+
+    private function mostrarFormularioNuevo(array $formData)
+    {
+        $this->view('admin/productos/nuevo', [
+            'isAdmin' => true,
+            'module' => 'admin',
+            'pageTitle' => 'Nuevo Producto',
+            'categorias' => $this->categoriasModel->Categorias_select(),
+            'formData' => $formData
+        ]);
     }
     // producto editar
     //metodo editar
