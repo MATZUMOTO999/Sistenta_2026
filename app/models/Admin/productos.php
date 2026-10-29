@@ -32,8 +32,10 @@ class Productos extends Model
         return $preparado->fetchAll(PDO::FETCH_ASSOC); 
     }
 
+    // Actualiza un producto usando los campos normalizados que recibe del controlador.
     public function actualizar(array $data)
     {
+        // Los parámetros enlazados evitan insertar valores directamente en la consulta SQL.
         $sql = "UPDATE {$this->table}
                 SET categoria_id = :categoria_id,
                     codigo_sku = :codigo_sku,
@@ -81,7 +83,10 @@ class Productos extends Model
         exit;
     }
 
-    public function eliminar()
-    {
+    public function eliminar($id){
+        $sql ="DELETE FROM " . $this->table . " WHERE id=:id";
+        $params = [':id' => $id];
+        $preparado = self::$db->prepare($sql);
+        return $preparado->execute($params);
     }
 }

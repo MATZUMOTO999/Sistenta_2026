@@ -56,9 +56,8 @@ foreach ($categorias as $categoria) {
         </div>
         <div>
             <a class="btn btn-danger" href="<?= BASE_URL ?>/admin/productos"><i class="fas fa-times"></i> Cancelar</a>
-            <button class="btn btn-info" type="reset"><i class="fas fa-trash"></i> Limpiar</button>
             <button class="btn btn-success" type="submit"><i class="fas fa-save"></i> Actualizar</button>
         </div>
-    </form>
+    </form> 
 </div>
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>

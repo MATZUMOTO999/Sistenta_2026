@@ -32,7 +32,7 @@
                     
                     <td>
                         <a class="btn btn-outline-primary" title="Editar" href="<?= BASE_URL ?>/admin/productos/editar/<?= $producto['id'] ?>" ><i class="fa fa-edit"></i class="fa fa-edit"> </a>
-                        <a class="btn btn-outline-danger" title="Eliminar" href="<?= BASE_URL ?>/admin/productos/eliminar/<?= $producto['id'] ?>" ><i class="fa fa-trash"></i class="fa fa-trash"> </a>
+                        <a class="btn btn-outline-danger" title="Eliminar" href="<?= BASE_URL ?>/admin/productos/eliminar/<?= $producto['id'] ?>" data-sigi-confirm onclick="return confirm('!Estás seguro de que deseas eliminar este producto¡')"><i class="fa fa-trash"></i></a>
                     </td>
 
                 </tr>

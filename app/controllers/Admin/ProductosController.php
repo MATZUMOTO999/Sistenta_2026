@@ -1,9 +1,15 @@
 <?php
 namespace App\Controllers\Admin;
 
+include_once __DIR__ . '/../../models/Admin/Categorias.php';
+include_once __DIR__ . '/../../models/Admin/Productos.php';
+include_once __DIR__ . '/../../models/Admin/Ventas.php';
+
+
 use Core\Controller;
 use App\Models\Admin\Categorias;
 use App\Models\Admin\Productos;
+use App\Models\Admin\Ventas;
 use PDOException;
 
 class ProductosController extends Controller
@@ -14,12 +20,16 @@ class ProductosController extends Controller
     // Modelo encargado de registrar los productos en la base de datos.
     protected $productosModel;
 
+    // Modelo encargado de consultar las ventas asociadas a un producto.
+    protected $ventasModel;
+
     // Inicializa los modelos necesarios para manejar categorías y productos.
     public function __construct()
     {
         parent::__construct();
         $this->categoriasModel = new Categorias();
         $this->productosModel = new Productos();
+        $this->ventasModel = new Ventas();
     }
 
     // Este método valida y registra un nuevo producto en la base de datos.
@@ -36,12 +46,20 @@ class ProductosController extends Controller
 
         $categoriaValida = filter_var($data['categoria_id'], FILTER_VALIDATE_INT);
         $stockValido = filter_var($data['stock_actual'], FILTER_VALIDATE_INT);
-        $datosValidos = $categoriaValida !== false && $categoriaValida > 0
-            && trim($data['codigo_sku']) !== ''
-            && trim($data['nombre']) !== ''
-            && trim($data['descripcion']) !== ''
-            && is_numeric($data['precio_venta']) && (float) $data['precio_venta'] >= 0
-            && $stockValido !== false && $stockValido >= 0;
+        //  validacion para comprobar las condiciones 
+        $precioValido = is_numeric($data['precio_venta'])
+            ? (float) $data['precio_venta'] >= 0
+            : false;
+        $datosValidos = !in_array(false, [
+            $categoriaValida !== false,
+            $categoriaValida > 0,
+            trim($data['codigo_sku']) !== '',
+            trim($data['nombre']) !== '',
+            trim($data['descripcion']) !== '',
+            $precioValido,
+            $stockValido !== false,
+            $stockValido >= 0
+        ], true);
 
         if ($datosValidos) {
             try {
@@ -118,8 +136,10 @@ class ProductosController extends Controller
         exit;
     }
 
+    // Recibe el formulario de edición, valida sus datos y solicita al modelo actualizar el producto.
     public function actualizar()
     {
+        // Normaliza los campos del formulario antes de validarlos y enviarlos al modelo.
         $producto = [
             'id' => (string) ($_POST['id'] ?? ''),
             'categoria_id' => (string) ($_POST['categoria_id'] ?? ''),
@@ -134,22 +154,33 @@ class ProductosController extends Controller
         $idValido = filter_var($producto['id'], FILTER_VALIDATE_INT);
         $categoriaValida = filter_var($producto['categoria_id'], FILTER_VALIDATE_INT);
         $stockValido = filter_var($producto['stock_actual'], FILTER_VALIDATE_INT);
-        $datosValidos = $idValido !== false && $idValido > 0
-            && $categoriaValida !== false && $categoriaValida > 0
-            && trim($producto['codigo_sku']) !== ''
-            && trim($producto['nombre']) !== ''
-            && trim($producto['descripcion']) !== ''
-            && is_numeric($producto['precio_venta']) && (float) $producto['precio_venta'] >= 0
-            && $stockValido !== false && $stockValido >= 0
-            && in_array($producto['activo'], ['0', '1'], true);
+        //validacion para comprobar las condiciones8888
+        $precioValido = is_numeric($producto['precio_venta'])
+            ? (float) $producto['precio_venta'] >= 0
+            : false;
+        $datosValidos = !in_array(false, [
+            $idValido !== false,
+            $idValido > 0,
+            $categoriaValida !== false,
+            $categoriaValida > 0,
+            trim($producto['codigo_sku']) !== '',
+            trim($producto['nombre']) !== '',
+            trim($producto['descripcion']) !== '',
+            $precioValido,
+            $stockValido !== false,
+            $stockValido >= 0,
+            in_array($producto['activo'], ['0', '1'], true)
+        ], true);
 
         if (!$datosValidos) {
+            // Si los datos no pasan la validación, conserva lo escrito y vuelve a mostrar el formulario.
             $_SESSION['flash_error'] = 'Verifique los datos ingresados e inténtelo nuevamente.';
             $this->mostrarFormularioEdicion($producto);
             exit;
         }
 
         try {
+            // La persistencia se realiza en Productos::actualizar().
             $actualizado = $this->productosModel->actualizar($producto);
         } catch (PDOException $exception) {
             error_log('Error al actualizar producto: ' . $exception->getMessage());
@@ -178,5 +209,22 @@ class ProductosController extends Controller
             'categorias' => $this->categoriasModel->Categorias_select(),
             'producto' => $producto
         ]);
+        
+    }
+    public function eliminar($id){
+        $detalle_ventas = $this->ventasModel->ver_detalle_ventas_Id_producto($id);
+        if($detalle_ventas){
+            $_SESSION['flash_error'] = "No se puede eliminar el producto porque tiene ventas asociadas";
+            header('Location: ' . BASE_URL . '/admin/productos');
+        }else{
+            $eliminar = $this->productosModel->eliminar($id);
+            if($eliminar){
+                $_SESSION['flash_success'] = "Producto eliminado correctamente";
+                header('Location: ' . BASE_URL . '/admin/productos');
+            }else{
+                $_SESSION['flash_error'] = "Error al eliminar el producto";
+                header('Location: ' . BASE_URL . '/admin/productos');
+            }
+        }
     }
 }
