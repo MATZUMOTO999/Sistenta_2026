@@ -31,7 +31,9 @@
         }
 
         .logo {
-            width: 200px;
+            width: 230px;
+            max-width: 100%;
+            height: auto;
             margin-bottom: 10px;
         }
     </style>
@@ -46,14 +48,7 @@
         <div class="col-md-6 col-lg-6">
             <div class="card p-4">
                 <div class="text-center">
-                    <?php
-                    if ($datosSistema['logo'] != '') {
-                        $ruta_logo = BASE_URL . '/images/' . $datosSistema['logo'];
-                    } else {
-                        $ruta_logo = BASE_URL . '/img/logo_completo.png';
-                    }
-                    ?>
-                    <img src="<?= $ruta_logo ?>" alt="Logo SIGI" class="logo">
+                    <img src="<?= BASE_URL ?>/img/logo_rez.png" alt="Logo REZ" class="logo">
                     <h4 class="mb-2">SISVENTAS</h4>
                     <p class="text-muted mb-4">Sistema de Ventas</p>
                 </div>

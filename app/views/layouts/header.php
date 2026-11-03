@@ -49,14 +49,7 @@ endif;
         <div class="navbar-header">
           <div class="navbar-brand-box d-flex align-items-left">
             <a href="<?= BASE_URL . '/' . $_SESSION['modulo_vista']; ?>" class="logo">
-              <?php
-              if ($_SESSION['logo'] != '') {
-                $ruta_logo = BASE_URL . '/images/' . $_SESSION['logo'];
-              } else {
-                $ruta_logo = BASE_URL . '/img/logo_completo.png';
-              }
-              ?>
-              <i class="mdi"><img src="<?= $ruta_logo ?>" alt="" width="100px" height="30px"></i>
+              <i class="mdi"><img src="<?= BASE_URL ?>/img/logo_rez.png" alt="Logo REZ" style="width: 100px; height: auto; vertical-align: middle;"></i>
               <span>VENTAS</span>
             </a>
             <button type="button" class="btn btn-sm mr-2 font-size-16 d-lg-none header-item waves-effect waves-light"
