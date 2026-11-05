@@ -1,157 +1,46 @@
-<<<<<<< HEAD
-<?php
-require __DIR__ . '/../../layouts/header.php';
-
-$categoriaSeleccionada = (string) ($formData['categoria_id'] ?? '');
-$categoriasDisponibles = $categorias ?? [];
-$categoriaDisponible = false;
-
-foreach ($categoriasDisponibles as $categoria) {
-=======
 <?php require __DIR__ . '/../../layouts/header.php'; ?>
-<?php $categoriaSeleccionada = (string) ($formData['categoria_id'] ?? ''); ?>
-<?php
-$categoriaDisponible = false;
-foreach ($categorias ?? [] as $categoria) {
->>>>>>> 577edcd5900f480f7b7177669e9aa4babf77dc5d
-    if ((string) $categoria['id'] === $categoriaSeleccionada) {
-        $categoriaDisponible = true;
-        break;
-    }
-}
-?>
-<<<<<<< HEAD
-
 <?php if (\Core\Auth::esAdmin()): ?>
     <div class="card p-3">
-        <h3>Registrar Nuevo Producto</h3>
-
-=======
-<?php if (\Core\Auth::esAdmin()): ?>
-    <div class="card p-3">
-        <h3>Registrar Nuevo Producto</h3>
->>>>>>> 577edcd5900f480f7b7177669e9aa4babf77dc5d
-        <form action="<?= BASE_URL ?>/admin/productos/guardar" method="POST">
+        <h3>Registrar Nuevo Usuario</h3>
+        <form action="<?= BASE_URL ?>/admin/usuarios/guardar" method="post">
             <div class="row">
-                <div class="col-md-4 form-group">
-                    <label for="categoria_id">Categoria</label>
-                    <select class="form-control" name="categoria_id" id="categoria_id" required>
-<<<<<<< HEAD
-                        <option value="" disabled <?= $categoriaSeleccionada === '' ? 'selected' : '' ?>>
-                            Seleccionar
-                        </option>
-                        <?php if ($categoriaSeleccionada !== '' && !$categoriaDisponible): ?>
-                            <option value="<?= htmlspecialchars($categoriaSeleccionada, ENT_QUOTES, 'UTF-8') ?>" selected>
-                                Categoria no disponible
-                            </option>
-                        <?php endif; ?>
-                        <?php foreach ($categoriasDisponibles as $categoria): ?>
-                            <option
-                                value="<?= htmlspecialchars((string) $categoria['id'], ENT_QUOTES, 'UTF-8') ?>"
-                                <?= (string) $categoria['id'] === $categoriaSeleccionada ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($categoria['nombre'], ENT_QUOTES, 'UTF-8') ?>
+                <div class="col-md-6 form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" class="form-control" name="nombre" id="nombre" value="<?= htmlspecialchars((string) ($usuario['nombre'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="apellidos">Apellidos:</label>
+                    <input type="text" class="form-control" name="apellidos" id="apellidos" value="<?= htmlspecialchars((string) ($usuario['apellidos'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="email">Correo electrónico:</label>
+                    <input type="email" class="form-control" name="email" id="email" value="<?= htmlspecialchars((string) ($usuario['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="text" class="form-control" name="telefono" id="telefono" value="<?= htmlspecialchars((string) ($usuario['telefono'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="rol_id">Rol:</label>
+                    <select class="form-control" name="rol_id" id="rol_id" required>
+                        <option value="">Seleccionar</option>
+                        <?php foreach ($roles as $rol): ?>
+                            <option value="<?= htmlspecialchars((string) $rol['id'], ENT_QUOTES, 'UTF-8') ?>" <?= (string) ($usuario['rol_id'] ?? '') === (string) $rol['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars((string) $rol['nombre'], ENT_QUOTES, 'UTF-8') ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-
-                <div class="col-md-4 form-group">
-                    <label for="codigo_sku">Codigo</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="codigo_sku"
-                        id="codigo_sku"
-                        maxlength="50"
-                        required
-                        value="<?= htmlspecialchars((string) ($formData['codigo_sku'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-
-                <div class="col-md-4 form-group">
-                    <label for="nombre">Nombre</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="nombre"
-                        id="nombre"
-                        maxlength="150"
-                        required
-                        value="<?= htmlspecialchars((string) ($formData['nombre'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-
-                <div class="col-md-4 form-group">
-                    <label for="descripcion">Descripcion</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="descripcion"
-                        id="descripcion"
-                        maxlength="1000"
-                        required
-                        value="<?= htmlspecialchars((string) ($formData['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-
-                <div class="col-md-4 form-group">
-                    <label for="precio_venta">Precio</label>
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="precio_venta"
-                        id="precio_venta"
-                        min="0"
-                        step="0.01"
-                        required
-                        value="<?= htmlspecialchars((string) ($formData['precio_venta'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-
-                <div class="col-md-4 form-group">
-                    <label for="stock_actual">Stock</label>
-                    <input
-                        type="number"
-                        class="form-control"
-                        name="stock_actual"
-                        id="stock_actual"
-                        min="0"
-                        required
-                        value="<?= htmlspecialchars((string) ($formData['stock_actual'] ?? '1'), ENT_QUOTES, 'UTF-8') ?>">
+                <div class="col-md-6 form-group">
+                    <label for="password">Contraseña inicial:</label>
+                    <input type="password" class="form-control" name="password" id="password" minlength="8" autocomplete="new-password" required>
+                    <small class="form-text text-muted">Debe tener al menos 8 caracteres.</small>
                 </div>
             </div>
-
-=======
-                        <option value="" disabled <?= $categoriaSeleccionada === '' ? 'selected' : '' ?>>Seleccionar</option>
-                        <?php if ($categoriaSeleccionada !== '' && !$categoriaDisponible): ?>
-                            <option value="<?= htmlspecialchars($categoriaSeleccionada, ENT_QUOTES, 'UTF-8') ?>" selected>Categoria no disponible</option>
-                        <?php endif; ?>
-                        <?php foreach ($categorias ?? [] as $categoria): ?>
-                            <option value="<?= htmlspecialchars((string) $categoria['id'], ENT_QUOTES, 'UTF-8') ?>" <?= (string) $categoria['id'] === $categoriaSeleccionada ? 'selected' : '' ?>><?= htmlspecialchars($categoria['nombre'], ENT_QUOTES, 'UTF-8') ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-4 form-group">
-                    <label for="codigo_sku">Codigo</label>
-                    <input type="text" class="form-control" name="codigo_sku" required maxlength="50" id="codigo_sku" value="<?= htmlspecialchars((string) ($formData['codigo_sku'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-                <div class="col-md-4 form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" class="form-control" name="nombre" required maxlength="150" id="nombre" value="<?= htmlspecialchars((string) ($formData['nombre'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-                <div class="col-md-4 form-group">
-                    <label for="descripcion">Descripcion</label>
-                    <input type="text" class="form-control" name="descripcion" required maxlength="1000" id="descripcion" value="<?= htmlspecialchars((string) ($formData['descripcion'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-                <div class="col-md-4 form-group">
-                    <label for="precio_venta">Precio</label>
-                    <input type="number" class="form-control" name="precio_venta" required id="precio_venta" min="0" step="0.01" value="<?= htmlspecialchars((string) ($formData['precio_venta'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
-                <div class="col-md-4 form-group">
-                    <label for="stock_actual">Stock</label>
-                    <input type="number" class="form-control" name="stock_actual" required id="stock_actual" min="0" value="<?= htmlspecialchars((string) ($formData['stock_actual'] ?? '1'), ENT_QUOTES, 'UTF-8') ?>">
-                </div>
+            <div>
+                <a class="btn btn-danger" href="<?= BASE_URL ?>/admin/usuarios"><i class="fas fa-times"></i> Cancelar</a>
+                <button class="btn btn-success" type="submit"><i class="fas fa-save"></i> Registrar</button>
             </div>
->>>>>>> 577edcd5900f480f7b7177669e9aa4babf77dc5d
-            <button type="submit" class="btn btn-primary">Registrar</button>
-            <button type="reset" class="btn btn-secondary">Limpiar</button>
-            <a href="<?= BASE_URL ?>/admin/productos" class="btn btn-danger">Cancelar</a>
         </form>
     </div>
 <?php else: ?>
@@ -159,9 +48,4 @@ foreach ($categorias ?? [] as $categoria) {
         No tienes permisos para acceder a esta página.
     </div>
 <?php endif; ?>
-
-<<<<<<< HEAD
 <?php require __DIR__ . '/../../layouts/footer.php'; ?>
-=======
-<?php require __DIR__ . '/../../layouts/footer.php'; ?>
->>>>>>> 577edcd5900f480f7b7177669e9aa4babf77dc5d

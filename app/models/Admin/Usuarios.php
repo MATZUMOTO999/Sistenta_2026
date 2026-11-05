@@ -37,6 +37,23 @@ class Usuarios extends Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function crear(array $data)
+    {
+        $sql = "INSERT INTO {$this->table}
+                    (rol_id, nombre, apellidos, email, password_hash, telefono, activo, reset_password, token_password)
+                VALUES
+                    (:rol_id, :nombre, :apellidos, :email, :password_hash, :telefono, 1, 0, '')";
+        $stmt = self::$db->prepare($sql);
+        return $stmt->execute([
+            ':rol_id' => $data['rol_id'],
+            ':nombre' => $data['nombre'],
+            ':apellidos' => $data['apellidos'],
+            ':email' => $data['email'],
+            ':password_hash' => $data['password_hash'],
+            ':telefono' => $data['telefono']
+        ]);
+    }
+
     public function actualizar(array $data)
     {
         $sql = "UPDATE {$this->table}

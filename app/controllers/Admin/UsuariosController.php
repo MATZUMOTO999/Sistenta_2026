@@ -25,11 +25,63 @@ class UsuariosController extends Controller
         ]);
         exit;
     }
-    public function nuevo(){
-        $this->view('admin/usuarios/nuevo', [
-            'module'    => 'admin',
-            'pageTitle' => 'Nuevo Usuario'
-        ]);
+    public function nuevo()
+    {
+        $this->verificarPermisos();
+        $this->mostrarFormularioNuevo([]);
+    }
+
+    public function guardar()
+    {
+        $this->verificarPermisos();
+        $usuario = [
+            'nombre' => trim((string) ($_POST['nombre'] ?? '')),
+            'apellidos' => trim((string) ($_POST['apellidos'] ?? '')),
+            'email' => trim((string) ($_POST['email'] ?? '')),
+            'telefono' => trim((string) ($_POST['telefono'] ?? '')),
+            'rol_id' => trim((string) ($_POST['rol_id'] ?? '')),
+            'password' => (string) ($_POST['password'] ?? '')
+        ];
+
+        $rolId = filter_var($usuario['rol_id'], FILTER_VALIDATE_INT);
+        $rolDisponible = false;
+        foreach ($this->usuariosModel->rolesDisponibles() as $rol) {
+            if ((string) $rol['id'] === $usuario['rol_id']) {
+                $rolDisponible = true;
+                break;
+            }
+        }
+
+        $datosValidos = $usuario['nombre'] !== ''
+            && $usuario['apellidos'] !== ''
+            && filter_var($usuario['email'], FILTER_VALIDATE_EMAIL) !== false
+            && $rolId !== false && $rolId > 0 && $rolDisponible
+            && strlen($usuario['password']) >= 8;
+
+        if (!$datosValidos) {
+            $_SESSION['flash_error'] = 'Verifique los datos ingresados. La contraseña debe tener al menos 8 caracteres.';
+            $this->mostrarFormularioNuevo($usuario);
+            exit;
+        }
+
+        try {
+            $this->usuariosModel->crear([
+                'nombre' => $usuario['nombre'],
+                'apellidos' => $usuario['apellidos'],
+                'email' => $usuario['email'],
+                'telefono' => $usuario['telefono'],
+                'rol_id' => $rolId,
+                'password_hash' => password_hash($usuario['password'], PASSWORD_DEFAULT)
+            ]);
+        } catch (PDOException $exception) {
+            error_log('Error al crear usuario: ' . $exception->getMessage());
+            $_SESSION['flash_error'] = 'No se pudo registrar el usuario. Verifique que el correo no esté registrado.';
+            $this->mostrarFormularioNuevo($usuario);
+            exit;
+        }
+
+        $_SESSION['flash_success'] = 'Usuario registrado correctamente.';
+        header('Location: ' . BASE_URL . '/admin/usuarios');
         exit;
     }
 
@@ -155,6 +207,17 @@ class UsuariosController extends Controller
             'isAdmin' => true,
             'module' => 'admin',
             'pageTitle' => 'Editar Usuario',
+            'usuario' => $usuario,
+            'roles' => $this->usuariosModel->rolesDisponibles()
+        ]);
+    }
+
+    private function mostrarFormularioNuevo(array $usuario)
+    {
+        $this->view('admin/usuarios/nuevo', [
+            'isAdmin' => true,
+            'module' => 'admin',
+            'pageTitle' => 'Nuevo Usuario',
             'usuario' => $usuario,
             'roles' => $this->usuariosModel->rolesDisponibles()
         ]);
