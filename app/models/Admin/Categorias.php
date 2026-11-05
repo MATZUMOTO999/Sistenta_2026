@@ -8,17 +8,54 @@ class Categorias extends Model{
     protected $table = 'categorias';
 
     public function guardar($data){
-        if(!empty($data['id'])){
-
-        }else{
-            $sql = "INSERT INTO {$this->table} (nombre, descripcion) VALUES (:nombre, :descripcion)";
-            $params = [
-                ':nombre' => $data['nombre'],
-                ':descripcion' => $data['descripcion']
-            ];
-        }
+        $sql = "INSERT INTO {$this->table} (nombre, descripcion) VALUES (:nombre, :descripcion)";
+        $params = [
+            ':nombre' => $data['nombre'],
+            ':descripcion' => $data['descripcion']
+        ];
         $stmt = self::$db->prepare($sql);
         return $stmt->execute($params);
+    }
+
+    public function ver(int $id)
+    {
+        $stmt = self::$db->prepare("SELECT id, nombre, descripcion, activo FROM {$this->table} WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function actualizar(array $data)
+    {
+        $sql = "UPDATE {$this->table}
+                SET nombre = :nombre, descripcion = :descripcion, activo = :activo
+                WHERE id = :id";
+        $stmt = self::$db->prepare($sql);
+        return $stmt->execute([
+            ':nombre' => $data['nombre'],
+            ':descripcion' => $data['descripcion'],
+            ':activo' => $data['activo'],
+            ':id' => $data['id']
+        ]);
+    }
+
+    public function tieneProductos(int $id)
+    {
+        $stmt = self::$db->prepare("SELECT 1 FROM productos WHERE categoria_id = :id LIMIT 1");
+        $stmt->execute([':id' => $id]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public function eliminar(int $id)
+    {
+        $sql = "DELETE FROM {$this->table}
+                WHERE id = :id
+                  AND NOT EXISTS (SELECT 1 FROM productos WHERE categoria_id = :producto_categoria_id)";
+        $stmt = self::$db->prepare($sql);
+        $stmt->execute([
+            ':id' => $id,
+            ':producto_categoria_id' => $id
+        ]);
+        return $stmt->rowCount() > 0;
     }
 
     public function obtenerCategorias($start, $length, $orderColumnIndex, $orderDir, $filters){

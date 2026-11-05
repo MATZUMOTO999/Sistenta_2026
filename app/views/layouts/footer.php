@@ -138,6 +138,7 @@ endif; ?>
         const overlay = document.getElementById('global-loader');
         let counter = 0;
         let showTimer = null;
+        let skipBeforeUnloadLoader = false;
 
         function showLoader(text) {
             counter++;
@@ -179,6 +180,7 @@ endif; ?>
         // NUEVO: Mostrar al recargar con F5 o salir de la página
         // ==========================================
         window.addEventListener('beforeunload', function() {
+            if (skipBeforeUnloadLoader) return;
             // No forzamos un texto específico para no sobreescribir si ya decía "Guardando..."
             showLoader('Cargando…');
         });
@@ -187,7 +189,8 @@ endif; ?>
         // 1) Mostrar en submit de cualquier form
         document.addEventListener('submit', function(e) {
             const form = e.target;
-            if (form.hasAttribute('data-no-loader')) return;
+            skipBeforeUnloadLoader = Boolean(form && form.hasAttribute('data-no-loader'));
+            if (skipBeforeUnloadLoader) return;
             if (form && form.tagName === 'FORM') {
                 showLoader('Procesando…');
             }
@@ -197,6 +200,9 @@ endif; ?>
         document.addEventListener('click', function(e) {
             const a = e.target.closest('a');
             if (!a) return;
+
+            skipBeforeUnloadLoader = a.hasAttribute('data-no-loader');
+            if (skipBeforeUnloadLoader) return;
 
             if (a.hasAttribute('data-sigi-confirm')) return;
 

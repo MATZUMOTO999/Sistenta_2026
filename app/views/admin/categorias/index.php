@@ -48,8 +48,15 @@
                         searchable: false,
                         render: function(data, type, row){
                             return `
-                                <a href="<?= BASE_URL ?>/admin/categorias/editar/${row.id}" class="btn btn-sm btn-primary">Editar</a>
-                                <button class="btn btn-sm btn-danger" onclick="eliminarCategoria(${row.id})">Eliminar</button>
+                                <a href="<?= BASE_URL ?>/admin/categorias/editar/${row.id}" class="btn btn-outline-primary mr-1" title="Editar categoría" aria-label="Editar categoría">
+                                    <i class="fa fa-edit" aria-hidden="true"></i>
+                                </a>
+                                <form action="<?= BASE_URL ?>/admin/categorias/eliminar" method="post" class="d-inline" data-no-loader onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta categoría?');">
+                                    <input type="hidden" name="id" value="${row.id}">
+                                    <button type="submit" class="btn btn-outline-danger" title="Eliminar categoría" aria-label="Eliminar categoría">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </form>
                             `;
                         } 
                     }
