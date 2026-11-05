@@ -120,7 +120,7 @@ class App
                 require_once $ctrlFile;
                 array_shift($segments);
             } else {
-                return $this->render404("Controlador no encontrado");
+                return $this->render404();
             }
         } else {
             // controlador por defecto dentro del módulo
@@ -131,7 +131,7 @@ class App
         /* ---------- 3. Instancia ---------- */
         $class = "App\\Controllers\\{$this->module}\\{$this->controller}";
         if (!class_exists($class)) {
-            return $this->render404("Clase {$class} no existe");
+            return $this->render404();
         }
         $this->controller = new $class();
 
@@ -139,7 +139,7 @@ class App
         if (!empty($segments[0]) && method_exists($this->controller, $segments[0])) {
             $this->method = array_shift($segments);
         } elseif (!empty($segments[0])) {
-            return $this->render404("Método {$segments[0]} no encontrado");
+            return $this->render404();
         }
 
         /* ---------- 5. Parámetros ---------- */
@@ -174,10 +174,11 @@ class App
     }
 
     /* ------------------------------------ */
-    private function render404(string $msg)
+    private function render404()
     {
         http_response_code(404);
-        echo "<h1>404</h1><p>{$msg}</p>";
+        $base_url = rtrim(BASE_URL, '/') . '/';
+        require __DIR__ . '/../app/views/errors/404.php';
         exit;
     }
 }
